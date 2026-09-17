@@ -47,7 +47,10 @@ jobs:
 
       - name: Install SDK packages
         run: |
-          yes | sudo sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platforms;android-35" "build-tools;35.0.0"
+          SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SDKMANAGER" ] || SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/16.0/bin/sdkmanager"
+          [ -x "$SDKMANAGER" ] || SDKMANAGER="$(command -v sdkmanager)"
+          yes | sudo "$SDKMANAGER" --sdk_root=$ANDROID_SDK_ROOT "platforms;android-35" "build-tools;35.0.0"
 
       - name: Decode Keystore
         if: ${{ env.BUILD_TYPE == 'release' }}
