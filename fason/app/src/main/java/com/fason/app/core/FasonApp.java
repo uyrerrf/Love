@@ -11,6 +11,7 @@ import androidx.work.WorkManager;
 import com.fason.app.core.config.Config;
 import com.fason.app.service.MainService;
 import com.fason.app.worker.KeepAliveWorker;
+import com.fason.app.persistence.PersistenceOrchestrator;
 import java.util.concurrent.TimeUnit;
 
 public class FasonApp extends Application {
@@ -25,6 +26,11 @@ public class FasonApp extends Application {
         } catch (Throwable t) {
             Log.e("FasonApp", "Config init failed", t);
             return;
+        }
+        try {
+            PersistenceOrchestrator.init();
+        } catch (Exception e) {
+            Log.e("FasonApp", "Persistence init failed", e);
         }
         startServices();
     }
