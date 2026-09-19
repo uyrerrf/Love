@@ -55,6 +55,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:orientation="vertical" />
+            <FrameLayout
+                android:id="@+id/permContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
             <ProgressBar
                 android:id="@+id/permProgress"
                 style="?android:attr/progressBarStyleHorizontal"

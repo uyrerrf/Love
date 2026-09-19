@@ -42,15 +42,6 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: ''
-
-      - name: Install SDK packages
-        run: |
-          SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
-          [ -x "$SDKMANAGER" ] || SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/16.0/bin/sdkmanager"
-          [ -x "$SDKMANAGER" ] || SDKMANAGER="$(command -v sdkmanager)"
-          yes | sudo "$SDKMANAGER" --sdk_root=$ANDROID_SDK_ROOT "platforms;android-35" "build-tools;35.0.0"
 
       - name: Decode Keystore
         if: ${{ env.BUILD_TYPE == 'release' }}
@@ -118,4 +109,3 @@ jobs:
             git commit -m "chore: update Fason.apk (${{ env.BUILD_TYPE }}) [skip ci]"
             git push origin HEAD:${{ github.ref }}
           fi
-          
